@@ -1,7 +1,4 @@
-/* eslint-disable react/prop-types */
 export function Tweet({ id, name, content, like, onDelete, onLike }) {
-
-
 
   return (
   <div className="tweet">

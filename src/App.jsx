@@ -1,36 +1,26 @@
-import { useRef, useState } from 'react'
-import {Tweet} from './Tweet'
+import { useState } from 'react'
+import {TweetForm} from './TweetForm';
+import TweetList from './TweetList';
+
 const DEFAULT_TWEET = [{
   id:0, name:"Nina", content:"Hey", like:100
 },
-]
+];
 
-
-
-function App() {
+const useTweet = () => {
   const [tweets, setTweets] = useState(DEFAULT_TWEET);
-  const nameRef = useRef();
-  const contentRef = useRef();
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const name = nameRef.current.value;
-    const content = contentRef.current.value;
-    const newTweet = {
-      id: tweets[tweets.length - 1]?.id + 1 ?? 0,
-      name,
-      content,
-      like: 0,
-    }
-
-    if(name !== undefined && name !== "" && content !== undefined && content !== "")
-    addTweet(newTweet)
-}
-
-
 
 const addTweet = (tweet) => {
-  setTweets([...tweets, tweet]);
+  setTweets((curr) => {
+    const newTweet = {
+    id: curr[curr.length - 1]?.id + 1 || 0,
+    name: tweet.name,
+    content: tweet.content,
+    like: 0,
+  };
+
+   return [...tweets, newTweet];
+  });
   }
 
   const onDelete = (tweetId) => {
@@ -46,37 +36,18 @@ const addTweet = (tweet) => {
       return copyTweet;
     })
   }
+  return { onLike, onDelete, addTweet, tweets }
+}
+
+function App() {
+
+  const { onLike, onDelete, addTweet, tweets } = useTweet()
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="tweet-form">
-        <h4>New Tweet</h4>
-        <input ref={nameRef} placeholder="name" type="text" name="name" />
-        <input ref={contentRef} placeholder="content" type="content" name="content" />
-        <button type="submit">Envoyer</button>
-      </form>
-<div className="tweet-container">
-       {tweets.map((tweet) => {
-        
-  return (
-    <Tweet
-    key={tweet.id}
-    id={tweet.id}
-    name={tweet.name}
-    content={tweet.content}
-    like={tweet.like}
-    onDelete={(id) => {
-      onDelete(id)
-    }}
-    onLike={(id) => {
-      onLike(id)
-    }}
-    />
-  )
- })}
-      </div>
+  <div>
+    <TweetForm onSubmit={addTweet} />
+    <TweetList tweets={tweets} onDelete={onDelete} onLike={onLike}/>
     </div>
-    
   )
 }
 
